@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Varas Cíveis – TJRS</title>
+<meta name="description" content="Gerenciador de Varas Cíveis – Comarca de Porto Alegre e Região Metropolitana – TJRS">
+<meta name="theme-color" content="#1F4E79">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%231F4E79'/><text y='.9em' font-size='70' x='12' fill='white' font-weight='bold'>TJ</text></svg>">
+<style>
+:root{
+  --azul:#1F4E79;--azul-m:#2E75B6;--azul-c:#BDD7EE;--azul-p:#DEEAF1;
+  --verde:#375623;--verde-b:#E2EFDA;--amar-b:#FFF2CC;--amar-d:#F0B429;
+  --c1:#F4F6F9;--c2:#E2E8F0;--c3:#94A3B8;--c4:#475569;
+  --verm:#C0392B;--br:#FFFFFF;--txt:#1E293B;
+  --sh:0 2px 12px rgba(31,78,121,.12);--sh2:0 8px 32px rgba(31,78,121,.18)
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--c1);color:var(--txt);min-height:100vh}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit;font-size:.88rem}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,var(--azul) 0%,var(--azul-m) 100%);
+  color:var(--br);padding:0 1.25rem;display:flex;align-items:center;
+  justify-content:space-between;gap:.75rem;min-height:58px;
+  box-shadow:var(--sh2);position:sticky;top:0;z-index:200;flex-wrap:wrap
+}
+.logo{display:flex;align-items:center;gap:.6rem}
+.logo-badge{width:36px;height:36px;background:rgba(255,255,255,.18);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900}
+.logo-text h1{font-size:.9rem;font-weight:700;line-height:1.2}
+.logo-text p{font-size:.65rem;opacity:.75}
+.hdr-acts{display:flex;gap:.35rem;flex-wrap:wrap}
+.btn-h{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:var(--br);padding:.35rem .7rem;border-radius:6px;font-size:.76rem;font-weight:600;
+  display:flex;align-items:center;gap:.28rem;transition:background .18s}
+.btn-h:hover{background:rgba(255,255,255,.28)}
+.btn-h.pri{background:var(--br);color:var(--azul);border-color:var(--br)}
+.btn-h.pri:hover{background:var(--azul-p)}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  background:var(--azul);display:flex;overflow-x:auto;
+  position:sticky;top:58px;z-index:150;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent;
+  gap:2px;padding:0 .5rem;cursor:grab
+}
+.tab-bar::-webkit-scrollbar{height:4px}
+.tab-bar::-webkit-scrollbar-track{background:transparent}
+.tab-bar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:2px}
+.tab-bar.grabbing{cursor:grabbing}
+.tab-btn{
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);
+  border:none;padding:.55rem 1rem;font-size:.75rem;font-weight:600;
+  white-space:nowrap;border-radius:6px 6px 0 0;margin-top:6px;
+  transition:all .18s;cursor:pointer;border-bottom:3px solid transparent
+}
+.tab-btn:hover{background:rgba(255,255,255,.2);color:var(--br)}
+.tab-btn.active{
+  background:var(--br);color:var(--azul);
+  border-bottom-color:var(--azul-m)
+}
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--azul-c);color:var(--azul);
+  border-radius:10px;padding:.05rem .4rem;font-size:.65rem;font-weight:700;margin-left:.3rem
+}
+.tab-btn.active .tab-badge{background:var(--azul-m);color:var(--br)}
+
+/* LEGENDA DE STATUS */
+.legenda-bar{
+  background:var(--br);border-bottom:1px solid var(--c2);
+  padding:.38rem 1rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;
+  position:sticky;top:110px;z-index:140;box-shadow:0 1px 4px rgba(0,0,0,.06)
+}
+.legenda-bar .lg-label{
+  font-size:.68rem;font-weight:700;color:var(--c4);
+  text-transform:uppercase;letter-spacing:.06em;margin-right:.2rem;white-space:nowrap
+}
+.lg-item{
+  display:inline-flex;align-items:center;gap:.32rem;
+  padding:.22rem .65rem;border-radius:20px;font-size:.68rem;font-weight:600;
+  white-space:nowrap;border:1px solid rgba(0,0,0,.1)
+}
+.lg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:250px 1fr;min-height:calc(100vh - 110px);transition:grid-template-columns .25s ease}
+.layout.sb-collapsed{grid-template-columns:0px 1fr}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  background:var(--br);border-right:1px solid var(--c2);padding:.9rem;
+  display:flex;flex-direction:column;gap:.75rem;
+  position:sticky;top:145px;height:calc(100vh - 145px);overflow-y:auto;
+  overflow-x:hidden;
+  width:250px;min-width:250px;
+  transition:transform .25s ease,opacity .25s ease;
+}
+.layout.sb-collapsed .sidebar{
+  transform:translateX(-100%);opacity:0;pointer-events:none
+}
+/* botão aba lateral para reabrir */
+.sb-tab{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);
+  z-index:120;background:var(--azul);color:var(--br);
+  border:none;border-radius:0 6px 6px 0;
+  padding:.55rem .28rem;cursor:pointer;
+  writing-mode:vertical-rl;text-orientation:mixed;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;
+  box-shadow:2px 0 8px rgba(0,0,0,.18);
+  transition:opacity .2s,left .25s ease;
+  opacity:0;pointer-events:none
+}
+.layout.sb-collapsed .sb-tab{opacity:1;pointer-events:auto}
+/* botão de recolher dentro da sidebar */
+.sb-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:-.1rem
+}
+.sb-toggle-btn{
+  background:var(--c1);border:1.5px solid var(--c2);color:var(--c4);
+  border-radius:6px;padding:.2rem .45rem;font-size:.72rem;font-weight:700;
+  cursor:pointer;line-height:1;transition:background .15s
+}
+.sb-toggle-btn:hover{background:var(--azul-c)}
+.sidebar.hide{display:none}
+.sb-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--c3);padding-bottom:.3rem;border-bottom:1px solid var(--c2)}
+.fg{display:flex;flex-direction:column;gap:.25rem}
+.fg label{font-size:.75rem;font-weight:600;color:var(--c4)}
+.fg input,.fg select{padding:.4rem .55rem;border:1.5px solid var(--c2);border-radius:6px;
+  background:var(--c1);color:var(--txt);width:100%;transition:border-color .18s}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--azul-m);background:var(--br)}
+.stats{display:flex;flex-direction:column;gap:.35rem}
+.stat{background:var(--c1);border-radius:6px;padding:.45rem .65rem;
+  display:flex;justify-content:space-between;align-items:center}
+.stat .lbl{font-size:.72rem;color:var(--c4)}
+.stat .val{font-size:.95rem;font-weight:700;color:var(--azul)}
+.stat.ok .val{color:var(--verde)}
+.stat.pend .val{color:var(--amar-d)}
+.sb-foot{font-size:.65rem;color:var(--c3);margin-top:auto;padding-top:.65rem;border-top:1px solid var(--c2)}
+
+/* ── MAIN ── */
+.main{padding:.9rem;overflow-x:auto}
+.toolbar{display:flex;align-items:center;justify-content:space-between;
+  gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+.toolbar h2{font-size:.9rem;font-weight:700;color:var(--azul)}
+.btn{padding:.35rem .7rem;border-radius:6px;font-size:.76rem;font-weight:600;
+  border:1.5px solid transparent;display:inline-flex;align-items:center;gap:.28rem;transition:all .15s}
+.btn-pri{background:var(--azul);color:var(--br)}
+.btn-pri:hover{background:var(--azul-m)}
+.btn-out{background:var(--br);color:var(--azul);border-color:var(--azul-c)}
+.btn-out:hover{background:var(--azul-p)}
+.btn-sm{padding:.22rem .48rem;font-size:.7rem}
+.btn-del{background:var(--verm);color:var(--br)}
+.btn-del:hover{opacity:.85}
+
+/* ── TABELA ── */
+.tbl-wrap{
+  background:var(--br);border-radius:8px;box-shadow:var(--sh);
+  overflow-x:auto;overflow-y:auto;cursor:grab;
+  max-height:calc(100vh - 212px);
+  scrollbar-width:thin;scrollbar-color:var(--azul-c) transparent
+}
+.tbl-wrap::-webkit-scrollbar{height:6px;width:6px}
+.tbl-wrap::-webkit-scrollbar-track{background:transparent}
+.tbl-wrap::-webkit-scrollbar-thumb{background:var(--azul-c);border-radius:3px}
+.tbl-wrap.grabbing{cursor:grabbing}
+table{border-collapse:collapse;font-size:.77rem;width:max-content;min-width:100%}
+thead th{background:var(--azul);color:var(--br);font-weight:700;font-size:.68rem;
+  letter-spacing:.04em;text-transform:uppercase;padding:.55rem .5rem;
+  white-space:nowrap;position:sticky;top:0;z-index:4;
+  border-right:1px solid rgba(255,255,255,.15);cursor:pointer;user-select:none}
+thead th:hover{background:var(--azul-m)}
+thead th.sa::after{content:' ↑';opacity:.7}
+thead th.sd::after{content:' ↓';opacity:.7}
+/* coluna Vara: fixa à esquerda */
+thead th:first-child,
+tbody td:first-child{
+  position:sticky;left:0;z-index:3;
+  background:var(--azul);color:var(--br);
+  border-right:2px solid rgba(255,255,255,.3);
+  box-shadow:2px 0 6px rgba(0,0,0,.10)
+}
+/* canto superior esquerdo: sticky em ambos os eixos */
+thead th:first-child{z-index:5}
+tbody td:first-child{
+  background:inherit;color:var(--txt);
+  border-right:2px solid var(--c2)
+}
+/* garante que a cor de fundo da linha apareça na célula fixa */
+tr[data-st="Enviado e-mail/WhatsApp"] td:first-child{background:#3B82F6!important}
+tr[data-st="Enviado Pitch"] td:first-child{background:#EAB308!important}
+tr[data-st="Visita/Apresentação"] td:first-child{background:#F97316!important}
+tr[data-st="Nomeado"] td:first-child{background:#DC2626!important}
+tbody tr{border-bottom:1px solid var(--c2);transition:background .1s}
+tbody tr:hover{filter:brightness(.93)}
+tbody tr:hover td:first-child{filter:brightness(.93)}
+tr.st-sem{background:#FFFFFF}
+tr.st-email{background:#DBEAFE}
+tr.st-pitch{background:#FEF9C3}
+tr.st-visita{background:#FFEDD5}
+tr.st-nomeado{background:#FECACA}
+tr.ok{background:var(--verde-b)}
+tr.pend{background:var(--amar-b)}
+/* status override (priority) */
+tr[data-st="Enviado e-mail/WhatsApp"]{background:#3B82F6!important;color:#fff}
+tr[data-st="Enviado Pitch"]{background:#EAB308!important}
+tr[data-st="Visita/Apresentação"]{background:#F97316!important}
+tr[data-st="Nomeado"]{background:#DC2626!important;color:#fff}
+tr.andar-sep td{background:var(--azul-m)!important;color:var(--br)!important;
+  font-weight:700;font-size:.7rem;padding:.28rem .5rem;letter-spacing:.04em}
+td{padding:.42rem .5rem;vertical-align:middle;white-space:nowrap}
+td.w{white-space:normal;max-width:190px}
+.vn{font-weight:700;color:var(--azul);font-size:.8rem}
+.ab{display:inline-block;background:var(--azul);color:var(--br);
+  border-radius:20px;padding:.1rem .42rem;font-size:.67rem;font-weight:700;
+  min-width:24px;text-align:center}
+.jb{display:inline-block;background:var(--azul-c);color:var(--azul);
+  border-radius:4px;padding:.07rem .32rem;font-size:.65rem;font-weight:600;margin:1px}
+.vz{color:var(--c3);font-style:italic;font-size:.72rem}
+.pill{display:inline-flex;align-items:center;gap:.22rem;border-radius:20px;
+  padding:.12rem .45rem;font-size:.65rem;font-weight:700}
+.pill.ok{background:var(--verde-b);color:var(--verde)}
+.pill.pend{background:var(--amar-b);color:#7A5F00}
+.st-sel{
+  border:1.5px solid var(--c2);border-radius:6px;
+  padding:.28rem .38rem;font-size:.72rem;font-weight:600;
+  background:transparent;color:var(--txt);cursor:pointer;
+  width:100%;min-width:148px;outline:none
+}
+.st-sel:focus{border-color:var(--azul-m)}
+
+/* ── CARDS mobile ── */
+.cards{display:none}
+.card{background:var(--br);border-radius:8px;box-shadow:var(--sh);
+  padding:.8rem;margin-bottom:.55rem;border-left:4px solid var(--azul)}
+.card.ok{border-left-color:var(--verde)}
+.card.pend{border-left-color:var(--amar-d)}
+.card h3{font-size:.87rem;font-weight:700;color:var(--azul);margin-bottom:.3rem}
+.card-meta{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.35rem}
+.card-row{font-size:.74rem;margin-bottom:.18rem}
+.card-row span{font-weight:600;color:var(--c4)}
+.card-btns{display:flex;gap:.3rem;margin-top:.45rem}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:300;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--br);border-radius:12px;box-shadow:var(--sh2);
+  width:100%;max-width:640px;max-height:92vh;
+  display:flex;flex-direction:column;animation:su .2s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.mhdr{background:var(--azul);color:var(--br);padding:.8rem 1rem;
+  border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:space-between}
+.mhdr h3{font-size:.92rem;font-weight:700}
+.mx{background:rgba(255,255,255,.18);border:none;color:var(--br);
+  width:26px;height:26px;border-radius:50%;font-size:.95rem;
+  display:flex;align-items:center;justify-content:center}
+.mx:hover{background:rgba(255,255,255,.35)}
+.mbdy{padding:1rem;overflow-y:auto;flex:1}
+.mftr{padding:.7rem 1rem;border-top:1px solid var(--c2);
+  display:flex;gap:.4rem;justify-content:flex-end}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+.fg2 .s2{grid-column:1/-1}
+.sep{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--azul);border-bottom:2px solid var(--azul-c);padding-bottom:.18rem;grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:.22rem}
+.fld label{font-size:.74rem;font-weight:600;color:var(--c4)}
+.fld input,.fld select,.fld textarea{padding:.42rem .55rem;border:1.5px solid var(--c2);
+  border-radius:6px;background:var(--c1);color:var(--txt);width:100%;transition:border-color .15s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{
+  outline:none;border-color:var(--azul-m);background:var(--br)}
+.fld textarea{min-height:60px;resize:vertical}
+.fhint{font-size:.65rem;color:var(--c3)}
+
+/* ── PRINT MODAL ── */
+.pr-opts{display:flex;flex-direction:column;gap:.75rem}
+.pr-rg{display:flex;flex-direction:column;gap:.35rem}
+.pr-r{display:flex;align-items:center;gap:.55rem;padding:.5rem .75rem;
+  border:1.5px solid var(--c2);border-radius:7px;cursor:pointer;
+  transition:border-color .15s,background .15s}
+.pr-r:hover{border-color:var(--azul-m);background:var(--azul-p)}
+.pr-r input[type=radio]{accent-color:var(--azul)}
+.pr-r .rl{font-weight:600;font-size:.82rem}
+.pr-r .rd{font-size:.7rem;color:var(--c3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.1rem;right:1.1rem;z-index:999;
+  background:var(--azul);color:var(--br);padding:.6rem .95rem;border-radius:8px;
+  font-size:.8rem;font-weight:600;box-shadow:var(--sh2);
+  transform:translateY(65px);opacity:0;transition:all .28s;pointer-events:none}
+.toast.show{transform:none;opacity:1}
+.toast.ok{background:var(--verde)}
+.toast.err{background:var(--verm)}
+
+/* ── PRINT ── */
+.pt-title{display:none;font-size:13pt;font-weight:700;color:#1F4E79;
+  margin-bottom:.4cm;border-bottom:2pt solid #1F4E79;padding-bottom:.2cm}
+.pt-sub{font-size:8.5pt;color:#555;margin-bottom:.35cm}
+@media print{
+  header,.tab-bar,.legenda-bar,.sidebar,.toolbar,.overlay,.toast,.act-col,.card-btns
+    {display:none!important}
+  body,.layout,.main{background:white!important}
+  .layout{display:block}
+  .main{padding:0}
+  .tbl-wrap{box-shadow:none;border:1px solid #bbb}
+  table{font-size:8pt}
+  thead th{background:#1F4E79!important;color:white!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr.ok{background:#E2EFDA!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr.pend{background:#FFF2CC!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr.andar-sep td{background:#2E75B6!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr[data-st="Enviado e-mail/WhatsApp"]{background:#3B82F6!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr[data-st="Enviado Pitch"]{background:#EAB308!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr[data-st="Visita/Apresentação"]{background:#F97316!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr[data-st="Nomeado"]{background:#DC2626!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pt-title{display:block!important}
+  .cards{display:none!important}
+  .tbl-wrap{display:block!important}
+  @page{margin:1cm;size:A4 landscape}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr!important}
+  .layout.sb-collapsed{grid-template-columns:0px 1fr!important}
+  .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--c2);top:0;min-width:0;width:100%}
+  .fg2{grid-template-columns:1fr}
+  .fg2 .s2{grid-column:1}
+}
+@media(max-width:580px){
+  .tbl-wrap{display:none}
+  .cards{display:block}
+  .logo-text p{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-badge">TJ</div>
+    <div class="logo-text">
+      <h1>Varas Cíveis – TJRS</h1>
+      <p>Comarcas da Região Metropolitana de Porto Alegre e Litoral Norte</p>
+    </div>
+  </div>
+  <div class="hdr-acts">
+    <button class="btn-h" onclick="toggleSidebar()">☰ Filtros</button>
+    <button class="btn-h" onclick="abrirNova()">＋ Nova Vara</button>
+    <button class="btn-h pri" onclick="abrirPrint()">🖨 Imprimir</button>
+    <button class="btn-h" onclick="exportar()">↓ Exportar</button>
+    <button class="btn-h" onclick="document.getElementById('fi').click()">↑ Importar</button>
+    <button class="btn-h" onclick="restaurar()">↺ Restaurar</button>
+    <input type="file" id="fi" accept=".json" style="display:none" onchange="importar(event)">
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<div class="tab-bar" id="tabBar"></div>
+
+<!-- LEGENDA DE STATUS -->
+<div class="legenda-bar">
+  <span class="lg-label">Status:</span>
+  <span class="lg-item" style="background:#F8FAFC;color:#475569">
+    <span class="lg-dot" style="background:#CBD5E1"></span>Sem contato
+  </span>
+  <span class="lg-item" style="background:#3B82F6;color:#fff">
+    <span class="lg-dot" style="background:rgba(255,255,255,.7)"></span>Enviado e-mail/WhatsApp
+  </span>
+  <span class="lg-item" style="background:#EAB308;color:#1a1a1a">
+    <span class="lg-dot" style="background:rgba(0,0,0,.25)"></span>Enviado Pitch
+  </span>
+  <span class="lg-item" style="background:#F97316;color:#fff">
+    <span class="lg-dot" style="background:rgba(255,255,255,.7)"></span>Visita/Apresentação
+  </span>
+  <span class="lg-item" style="background:#DC2626;color:#fff">
+    <span class="lg-dot" style="background:rgba(255,255,255,.7)"></span>Nomeado
+  </span>
+</div>
+
+<div class="layout" id="layout">
+  <button class="sb-tab" id="sbTab" onclick="toggleSidebar()" title="Abrir filtros">Filtros &amp; Busca</button>
+  <aside class="sidebar" id="sb">
+    <div class="sb-toggle">
+      <div class="sb-title" style="border:none;padding:0">Filtros &amp; Busca</div>
+      <button class="sb-toggle-btn" onclick="toggleSidebar()" title="Recolher painel">◀ Recolher</button>
+    </div>
+    <div class="sb-title" style="margin-top:.1rem"></div>
+    <div class="fg">
+      <label>Buscar</label>
+      <input type="search" id="q" placeholder="Nome, e-mail, fone…" oninput="filtrar()">
+    </div>
+    <div class="fg">
+      <label>Andar / Localização</label>
+      <select id="fAndar" onchange="filtrar()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Status</label>
+      <select id="fStatus" onchange="filtrar()">
+        <option value="">Todos</option>
+        <option value="Sem contato">Sem contato</option>
+        <option value="Enviado e-mail/WhatsApp">Enviado e-mail/WhatsApp</option>
+        <option value="Enviado Pitch">Enviado Pitch</option>
+        <option value="Visita/Apresentação">Visita/Apresentação</option>
+        <option value="Nomeado">Nomeado</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Juizado</label>
+      <select id="fJz" onchange="filtrar()">
+        <option value="">Todos</option>
+        <option value="sim">Com Juizado</option>
+        <option value="nao">Sem Juizado</option>
+      </select>
+    </div>
+    <div class="sb-title" style="margin-top:.2rem">Resumo da aba</div>
+    <div class="stats">
+      <div class="stat"><span class="lbl">Total</span><span class="val" id="sT">—</span></div>
+      <div class="stat ok"><span class="lbl">Com contato</span><span class="val" id="sOk">—</span></div>
+      <div class="stat pend"><span class="lbl">Pendentes</span><span class="val" id="sPend">—</span></div>
+    </div>
+    <div class="sb-foot">Fontes: Foto 4ª Vara · Placa Foro Central · Balcão Virtual TJRS (21/10/2025) · Planilha ODS</div>
+  </aside>
+
+  <main class="main">
+    <div class="pt-title" id="ptTitle"></div>
+    <div class="pt-sub" id="ptSub"></div>
+    <div class="toolbar">
+      <h2 id="lbl">Varas</h2>
+    </div>
+    <div class="tbl-wrap" id="tblWrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sort('vara')">Vara</th>
+            <th onclick="sort('andar')">Andar</th>
+            <th>Juizado(s)</th>
+            <th onclick="sort('magistrado')">Magistrado</th>
+            <th>E-mail 1º Jz.</th>
+            <th>Assessoria 1º Jz.</th>
+            <th>E-mail 2º Jz.</th>
+            <th>Assessoria 2º Jz.</th>
+            <th onclick="sort('telefone')">Telefone</th>
+            <th onclick="sort('whatsapp')">WhatsApp</th>
+            <th>Observações</th>
+            <th>Status</th>
+            <th class="act-col">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+    <div class="cards" id="cv"></div>
+  </main>
+</div>
+
+<!-- Modal edição -->
+<div class="overlay" id="mEd">
+  <div class="modal">
+    <div class="mhdr">
+      <h3 id="mTit">Editar Vara</h3>
+      <button class="mx" onclick="fechar('mEd')">✕</button>
+    </div>
+    <div class="mbdy">
+      <div class="fg2">
+        <div class="sep">Identificação</div>
+        <div class="fld s2"><label>Nome da Vara *</label><input id="fv" placeholder="Ex.: 4ª Vara Cível"></div>
+        <div class="fld"><label>Comarca</label><input id="fcom" placeholder="Ex.: Porto Alegre"></div>
+        <div class="fld"><label>Foro / Região</label><input id="ffor" placeholder="Ex.: Foro Central"></div>
+        <div class="fld"><label>Andar</label><input id="fa" placeholder="Ex.: 09"></div>
+        <div class="fld"><label>Juizados</label><input id="fjz" placeholder="Ex.: 1º, 2º"></div>
+        <div class="sep">Magistrado &amp; E-mails</div>
+        <div class="fld s2"><label>Magistrado</label><input id="fmag" placeholder="Ex.: Dr. João da Silva"></div>
+        <div class="fld"><label>E-mail 1º Juizado</label><input type="email" id="fe1" placeholder="frpoacent1jzX@tjrs.jus.br"></div>
+        <div class="fld"><label>Assessoria 1º Juizado</label><input id="fa1" placeholder="Nome do(a) assessor(a)"></div>
+        <div class="fld"><label>E-mail 2º Juizado</label><input type="email" id="fe2" placeholder="frpoacent2jzX@tjrs.jus.br"></div>
+        <div class="fld"><label>Assessoria 2º Juizado</label><input id="fa2" placeholder="Nome do(a) assessor(a)"></div>
+        <div class="sep">Contatos</div>
+        <div class="fld"><label>Telefone (sem DDD)</label><input id="ftel" placeholder="3210 6778"></div>
+        <div class="fld"><label>WhatsApp (sem DDD)</label><input id="fwpp" placeholder="98025 9177"></div>
+        <div class="sep">Outras informações</div>
+        <div class="fld s2"><label>Observações</label><textarea id="fobs"></textarea></div>
+        <div class="fld"><label>Fonte dos dados</label><input id="ffonte" placeholder="Ex.: ODS / Balcão Virtual"></div>
+        <div class="fld"><label>Status de contato</label>
+          <select id="fst">
+            <option value="">Sem contato</option>
+            <option value="Enviado e-mail/WhatsApp">Enviado e-mail/WhatsApp</option>
+            <option value="Enviado Pitch">Enviado Pitch</option>
+            <option value="Visita/Apresentação">Visita/Apresentação</option>
+            <option value="Nomeado">Nomeado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-out" onclick="fechar('mEd')">Cancelar</button>
+      <button class="btn btn-del btn-sm" id="bExc" onclick="excluir()" style="display:none">🗑 Excluir</button>
+      <button class="btn btn-pri" onclick="salvar()">✔ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal impressão -->
+<div class="overlay" id="mPr">
+  <div class="modal" style="max-width:440px">
+    <div class="mhdr">
+      <h3>🖨 Opções de Impressão</h3>
+      <button class="mx" onclick="fechar('mPr')">✕</button>
+    </div>
+    <div class="mbdy">
+      <div class="pr-opts">
+        <div>
+          <p style="font-size:.8rem;font-weight:600;margin-bottom:.45rem;color:var(--c4)">Ordenar / filtrar por:</p>
+          <div class="pr-rg">
+            <label class="pr-r"><input type="radio" name="pm" value="vara" checked onchange="updPrint()"><div><div class="rl">Por Vara</div><div class="rd">Ordem do número da vara</div></div></label>
+            <label class="pr-r"><input type="radio" name="pm" value="andar" onchange="updPrint()"><div><div class="rl">Por Andar</div><div class="rd">Separado por andar do edifício</div></div></label>
+            <label class="pr-r"><input type="radio" name="pm" value="pend" onchange="updPrint()"><div><div class="rl">Apenas pendentes</div><div class="rd">Varas sem contato preenchido</div></div></label>
+            <label class="pr-r"><input type="radio" name="pm" value="all" onchange="updPrint()"><div><div class="rl">Todas</div><div class="rd">Lista completa da aba atual</div></div></label>
+          </div>
+        </div>
+        <div id="prFiltArea"></div>
+        <div class="fld"><label>Título personalizado (opcional)</label><input id="prTit" placeholder="Ex.: Varas – 9º Andar"></div>
+        <div class="fld"><label>Incluir coluna Observações</label>
+          <select id="prObs"><option value="sim">Sim</option><option value="nao">Não</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-out" onclick="fechar('mPr')">Cancelar</button>
+      <button class="btn btn-pri" onclick="doImprimir()">🖨 Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DADOS – organizados por comarca/foro
+// ════════════════════════════════════════════════════
+var ABAS = [
+  {
+    id:"poa-central",
+    label:"Porto Alegre",
+    sublabel:"Foro Central",
+    varas:[
+      {id:1,vara:"1ª Vara Cível",andar:"09",juizados:"1º, 2º",
+        emailCartorio:"",email1jz:"frpoacent1jz1vciv@tjrs.jus.br",email2jz:"frpoacent2jz1vciv@tjrs.jus.br",
+        telefone:"",whatsapp:"999798233",
+        obs:"1º Jz.: responsável Luisa | 2º Jz.: responsável Isabela",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:2,vara:"2ª Vara Cível",andar:"09",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"999829062",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:3,vara:"3ª Vara Cível",andar:"09",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",
+        obs:"Atendimento a Peritos via Assessoria em balcão no horário de expediente",
+        status:"Sem contato",fonte:"ODS"},
+      {id:4,vara:"4ª Vara Cível",andar:"09",juizados:"1º, 2º",
+        emailCartorio:"frpoacent4vciv@tjrs.jus.br",
+        email1jz:"frpoacent1jz4vciv@tjrs.jus.br",
+        email2jz:"frpoacent2jz4vciv@tjrs.jus.br",
+        telefone:"3210 6778",whatsapp:"98025 9177",
+        obs:"WhatsApp completo: 51 98025 9177",status:"",fonte:"Foto / ODS"},
+      {id:5,vara:"5ª Vara Cível",andar:"10",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"981344131",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:6,vara:"6ª Vara Cível",andar:"10",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997893836",
+        obs:"Resp. Gabriela | Juíza Dra. Deise F.L. Vicente: ter. 18–19h | Dra. Fabiana Z. Lacerda: ter. 15–16h",
+        status:"",fonte:"ODS / Balcão Virtual"},
+      {id:7,vara:"7ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"ODS"},
+      {id:8,vara:"8ª Vara Cível",andar:"10",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997835902",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:9,vara:"9ª Vara Cível",andar:"11",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997862354",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:10,vara:"10ª Vara Cível",andar:"11",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997543447",obs:"Dr. Alexandre Manica",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:11,vara:"11ª Vara Cível",andar:"11",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"999665673",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:12,vara:"12ª Vara Cível",andar:"11",juizados:"1º, 2º",
+        emailCartorio:"",email1jz:"frpoacent1jz12vciv@tjrs.jus.br",email2jz:"frpoacent2jz12vciv@tjrs.jus.br",
+        telefone:"",whatsapp:"997525816",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:13,vara:"13ª Vara Cível",andar:"12",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997096329",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:14,vara:"14ª Vara Cível",andar:"12",juizados:"1º, 2º",
+        emailCartorio:"",email1jz:"frpoacent1jz14vciv@tjrs.jus.br",email2jz:"frpoacent2jz14vciv@tjrs.jus.br",
+        telefone:"",whatsapp:"997505274",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:15,vara:"15ª Vara Cível – Saúde Suplementar",andar:"12",juizados:"1º, 2º",
+        emailCartorio:"",email1jz:"frpoacent1jzvrss@tjrs.jus.br",email2jz:"frpoacent2jzvrss@tjrs.jus.br",
+        telefone:"",whatsapp:"995000988",
+        obs:"Vara Regional de Saúde Suplementar",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:16,vara:"16ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"ODS"},
+      {id:17,vara:"17ª Vara Cível",andar:"13",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998830099",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:18,vara:"18ª Vara Cível",andar:"13",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"999924372",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:19,vara:"19ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998547957",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:20,vara:"20ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"—"},
+      {id:21,vara:"21ª Vara Cível",andar:"14",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980591367",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:22,vara:"22ª Vara Cível",andar:"14",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980119459",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:23,vara:"23ª Vara Cível",andar:"14",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980140191",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:24,vara:"24ª Vara Cível",andar:"14",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980104411",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"poa-4d",
+    label:"Porto Alegre",
+    sublabel:"Foro Regional do 4º Distrito",
+    varas:[
+      {id:101,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoareg4dcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"},
+      {id:102,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoareg4dcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"poa-altopetropolis",
+    label:"Porto Alegre",
+    sublabel:"Foro Reg. Alto Petrópolis",
+    varas:[
+      {id:111,vara:"Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregapcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"poa-partenon",
+    label:"Porto Alegre",
+    sublabel:"Foro Regional do Partenon",
+    varas:[
+      {id:121,vara:"Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregptncap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980639258",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"poa-restinga",
+    label:"Porto Alegre",
+    sublabel:"Foro Regional da Restinga",
+    varas:[
+      {id:131,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregptncap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980101569",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"poa-sarandi",
+    label:"Porto Alegre",
+    sublabel:"Foro Regional do Sarandi",
+    varas:[
+      {id:141,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregsrcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"},
+      {id:142,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregsrcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"poa-tristeza",
+    label:"Porto Alegre",
+    sublabel:"Foro Regional da Tristeza",
+    varas:[
+      {id:151,vara:"Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frpoaregtrcap@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"canoas",
+    label:"Canoas",
+    sublabel:"Comarca de Canoas",
+    varas:[
+      {id:201,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcanoasfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998330644",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:202,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcanoasfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"999499130",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:203,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcanoasfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"996635959",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:204,vara:"4ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcanoasfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"996318477",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:205,vara:"5ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcanoasfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995604394",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"cachoeirinha",
+    label:"Cachoeirinha",
+    sublabel:"Comarca de Cachoeirinha",
+    varas:[
+      {id:301,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcachoeirfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997367994",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:302,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcachoeirfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"997025210",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"gravatai",
+    label:"Gravataí",
+    sublabel:"Comarca de Gravataí",
+    varas:[
+      {id:401,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frgravataifdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980286835",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:402,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frgravataifdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"ODS"},
+      {id:403,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frgravataifdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"guaiba",
+    label:"Guaíba",
+    sublabel:"Comarca de Guaíba",
+    varas:[
+      {id:501,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frguaibafdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995769603",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:502,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frguaibafdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995780366",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"esteio",
+    label:"Esteio",
+    sublabel:"Comarca de Esteio",
+    varas:[
+      {id:601,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"fresteiofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998608036",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:602,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"fresteiofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995579411",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:603,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"996684293",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"viamao",
+    label:"Viamão",
+    sublabel:"Comarca de Viamão",
+    varas:[
+      {id:701,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frviamaofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"996755142",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:702,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frviamaofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995874427",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:703,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frviamaofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995861221",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"osorio",
+    label:"Osório",
+    sublabel:"Comarca de Osório",
+    varas:[
+      {id:801,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frosoriofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995985299",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:802,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frosoriofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"980502600",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  },
+  {
+    id:"tramandai",
+    label:"Tramandaí",
+    sublabel:"Comarca de Tramandaí",
+    varas:[
+      {id:901,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frtramandfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998662364",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:902,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frtramandfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998404014",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:903,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frtramandfdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"",obs:"",status:"Sem contato",fonte:"ODS"}
+    ]
+  },
+  {
+    id:"capao",
+    label:"Capão da Canoa",
+    sublabel:"Comarca de Capão da Canoa",
+    varas:[
+      {id:1001,vara:"1ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcapaofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"998204024",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:1002,vara:"2ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"frcapaofdir@tjrs.jus.br",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995735566",obs:"",status:"",fonte:"ODS / Balcão Virtual"},
+      {id:1003,vara:"3ª Vara Cível",andar:"",juizados:"",
+        emailCartorio:"",email1jz:"",email2jz:"",
+        telefone:"",whatsapp:"995324718",obs:"",status:"",fonte:"ODS / Balcão Virtual"}
+    ]
+  }
+];
+
+// ════════════════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════════════════
+var abaAtiva = 0;
+var sc = null, sa = true;
+var fil = [];
+var dados; // referência à aba atual
+
+function carregar(){
+  try{
+    var s = localStorage.getItem('vc_tjrs_abas');
+    if(s){ var d=JSON.parse(s); if(Array.isArray(d)&&d.length) return d; }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(ABAS));
+}
+var DADOS_ABAS = carregar();
+
+function salvarLS(){ localStorage.setItem('vc_tjrs_abas', JSON.stringify(DADOS_ABAS)); }
+
+function abaVaras(){ return DADOS_ABAS[abaAtiva].varas; }
+
+// ════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════
+function temC(v){ return !!(v.magistrado||v.email1jz||v.email2jz||v.telefone||v.whatsapp); }
+function rowCls(v){ return ''; }
+function stBgColor(st){
+  if(st==='Enviado e-mail/WhatsApp') return '#3B82F6';
+  if(st==='Enviado Pitch') return '#EAB308';
+  if(st==='Visita/Apresentação') return '#F97316';
+  if(st==='Nomeado') return '#DC2626';
+  return '';
+}
+function mkOpt(val,lbl,cur){
+  return '<option value="'+val+'"'+(cur===val?' selected':'')+'>'+lbl+'</option>';
+}
+function setStatus(id,val){
+  var varas=abaVaras();
+  var v=varas.find(function(x){return x.id===id;});
+  if(!v) return;
+  v.status=val;
+  salvarLS();
+  // atualiza cor da linha SEM re-renderizar (preserva o select)
+  var tr=document.querySelector('tr[data-id="'+id+'"]');
+  if(tr){
+    tr.setAttribute('data-st',val);
+    tr.style.background=stBgColor(val);
+    // atualiza também a célula sticky (primeira coluna)
+    var td0=tr.querySelector('td:first-child');
+    if(td0) td0.style.background=stBgColor(val)||'';
+  }
+  // atualiza badges das abas sem re-renderizar a tabela
+  updateTabBadge(abaAtiva);
+  toast('Status salvo automaticamente.','ok');
+}
+function updateTabBadge(idx){
+  var btns=document.getElementById('tabBar').querySelectorAll('.tab-btn');
+  if(!btns[idx]) return;
+  var a=DADOS_ABAS[idx];
+  var total=a.varas.length;
+  var ok=a.varas.filter(temC).length;
+  var pend=total-ok;
+  btns[idx].innerHTML=a.label+'<br><small style="font-weight:400;font-size:.62rem;opacity:.8">'+a.sublabel+'</small>'
+    +'<span class="tab-badge">'+total+'</span>'
+    +(pend>0?'<span class="tab-badge" style="background:#FFF2CC;color:#7A5F00;margin-left:2px">'+pend+'⚠</span>':'');
+}
+function vz(t){ return t?'<span>'+t+'</span>':'<span class="vz">—</span>'; }
+function wLink(n){
+  if(!n) return '<span class="vz">—</span>';
+  var num='5551'+n.replace(/\D/g,'');
+  return '<a href="https://wa.me/'+num+'" target="_blank" style="color:var(--azul);text-decoration:none">📱 '+n+'</a>';
+}
+
+// ════════════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════════════
+function buildTabs(){
+  var bar=document.getElementById('tabBar');
+  bar.innerHTML='';
+  DADOS_ABAS.forEach(function(a,i){
+    var total=a.varas.length;
+    var ok=a.varas.filter(temC).length;
+    var pend=total-ok;
+    var btn=document.createElement('button');
+    btn.className='tab-btn'+(i===abaAtiva?' active':'');
+    btn.innerHTML=a.label+'<br><small style="font-weight:400;font-size:.62rem;opacity:.8">'+a.sublabel+'</small>'
+      +'<span class="tab-badge">'+total+'</span>'
+      +(pend>0?'<span class="tab-badge" style="background:#FFF2CC;color:#7A5F00;margin-left:2px">'+pend+'⚠</span>':'');
+    btn.onclick=(function(idx){return function(){mudarAba(idx);};})(i);
+    bar.appendChild(btn);
+  });
+}
+
+function mudarAba(idx){
+  abaAtiva=idx; sc=null; sa=true;
+  buildTabs();
+  popAndar();
+  filtrar();
+}
+
+// ════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════
+function render(){ stats(); renderTb(); renderCards(); }
+
+function renderTb(){
+  var tb=document.getElementById('tb');
+  if(!fil.length){
+    tb.innerHTML='<tr><td colspan="11" style="text-align:center;padding:2rem;color:var(--c3)">Nenhuma vara encontrada.</td></tr>';
+    return;
+  }
+  var h='', lastA=null;
+  var sepAndar=(sc==='andar'||window._prAndar);
+  fil.forEach(function(v){
+    if(sepAndar&&v.andar!==lastA){
+      var lbl=v.andar?v.andar+'° Andar':'Localização não informada';
+      h+='<tr class="andar-sep"><td colspan="11">▸ '+lbl+'</td></tr>';
+      lastA=v.andar;
+    }
+    var jbs=v.juizados?v.juizados.split(',').map(function(j){return '<span class="jb">'+j.trim()+'</span>';}).join(''):'<span class="vz">—</span>';
+    var stVal=v.status||'';
+    var stSel='<select class="st-sel" onchange="setStatus('+v.id+',this.value)">'
+      +mkOpt('','Sem contato',stVal)
+      +mkOpt('Enviado e-mail/WhatsApp','Enviado e-mail/WhatsApp',stVal)
+      +mkOpt('Enviado Pitch','Enviado Pitch',stVal)
+      +mkOpt('Visita/Apresentação','Visita/Apresentação',stVal)
+      +mkOpt('Nomeado','Nomeado',stVal)
+      +'</select>';
+    h+='<tr class="'+rowCls(v)+'" data-st="'+stVal+'" data-id="'+v.id+'">'
+      +'<td><span class="vn">'+v.vara+'</span></td>'
+      +'<td style="text-align:center">'+(v.andar?'<span class="ab">'+v.andar+'°</span>':'<span class="vz">—</span>')+'</td>'
+      +'<td style="text-align:center">'+jbs+'</td>'
+      +'<td class="w">'+vz(v.magistrado)+'</td>'
+      +'<td class="w">'+vz(v.email1jz)+'</td>'
+      +'<td class="w">'+vz(v.assessoria1jz)+'</td>'
+      +'<td class="w">'+vz(v.email2jz)+'</td>'
+      +'<td class="w">'+vz(v.assessoria2jz)+'</td>'
+      +'<td>'+vz(v.telefone?'(51) '+v.telefone:'')+'</td>'
+      +'<td>'+wLink(v.whatsapp)+'</td>'
+      +'<td class="w">'+vz(v.obs)+'</td>'
+      +'<td>'+stSel+'</td>'
+      +'<td class="act-col"><button class="btn btn-out btn-sm" onclick="abrirEd('+v.id+')">✏ Editar</button></td>'
+      +'</tr>';
+  });
+  tb.innerHTML=h;
+}
+
+function renderCards(){
+  var cv=document.getElementById('cv');
+  var h='';
+  fil.forEach(function(v){
+    var jbs=v.juizados?v.juizados.split(',').map(function(j){return '<span class="jb">'+j.trim()+'</span>';}).join(''):'';
+    var stBg=stBgColor(v.status);
+    h+='<div class="card" style="border-left-color:'+(stBg||'var(--azul)')+';background:'+(stBg||'var(--br)')+'">'
+      +'<h3>'+v.vara+'</h3>'
+      +'<div class="card-meta">'+(v.andar?'<span class="ab">'+v.andar+'°</span>':'')+jbs+'</div>'
+      +(v.magistrado?'<div class="card-row"><span>Magistrado:</span> '+v.magistrado+'</div>':'')
+      +(v.email1jz?'<div class="card-row"><span>1º Jz.:</span> '+v.email1jz+'</div>':'')
+      +(v.assessoria1jz?'<div class="card-row"><span>Assessoria 1º:</span> '+v.assessoria1jz+'</div>':'')
+      +(v.email2jz?'<div class="card-row"><span>2º Jz.:</span> '+v.email2jz+'</div>':'')
+      +(v.assessoria2jz?'<div class="card-row"><span>Assessoria 2º:</span> '+v.assessoria2jz+'</div>':'')
+      +(v.telefone?'<div class="card-row"><span>Tel.:</span> (51) '+v.telefone+'</div>':'')
+      +(v.whatsapp?'<div class="card-row"><span>WhatsApp:</span> '+v.whatsapp+'</div>':'')
+      +(v.obs?'<div class="card-row" style="font-size:.7rem;color:var(--c4)">'+v.obs+'</div>':'')
+      +'<div class="card-btns"><button class="btn btn-out btn-sm" onclick="abrirEd('+v.id+')">✏ Editar</button></div>'
+      +'</div>';
+  });
+  cv.innerHTML=h||'<p style="color:var(--c3);padding:1rem">Nenhuma vara encontrada.</p>';
+}
+
+function stats(){
+  var t=fil.length, ok=fil.filter(temC).length;
+  document.getElementById('sT').textContent=t;
+  document.getElementById('sOk').textContent=ok;
+  document.getElementById('sPend').textContent=t-ok;
+  var a=DADOS_ABAS[abaAtiva];
+  document.getElementById('lbl').textContent=a.label+' – '+a.sublabel+' ('+t+' vara'+(t!==1?'s':'')+')';
+}
+
+// ════════════════════════════════════════════════════
+// FILTROS
+// ════════════════════════════════════════════════════
+function filtrar(){
+  var q=document.getElementById('q').value.toLowerCase();
+  var fa=document.getElementById('fAndar').value;
+  var fs=document.getElementById('fStatus').value;
+  var fj=document.getElementById('fJz').value;
+  var varas=abaVaras();
+  fil=varas.filter(function(v){
+    var txt=[v.vara,v.emailCartorio,v.email1jz,v.email2jz,v.telefone,v.whatsapp,v.obs].join(' ').toLowerCase();
+    if(q&&!txt.includes(q)) return false;
+    if(fa&&v.andar!==fa) return false;
+    if(fs&&v.status!==fs) return false;
+    if(fj==='sim'&&!v.juizados) return false;
+    if(fj==='nao'&&v.juizados) return false;
+    return true;
+  });
+  if(sc) doSort();
+  render();
+}
+
+function popAndar(){
+  var varas=abaVaras();
+  var ands=[...new Set(varas.map(function(v){return v.andar;}).filter(Boolean))].sort();
+  var sel=document.getElementById('fAndar');
+  sel.innerHTML='<option value="">Todos</option>'+ands.map(function(a){return '<option value="'+a+'">'+a+'° andar</option>';}).join('');
+}
+
+// ════════════════════════════════════════════════════
+// SORT
+// ════════════════════════════════════════════════════
+function sort(col){
+  if(sc===col) sa=!sa; else{sc=col;sa=true;}
+  document.querySelectorAll('thead th').forEach(function(th){th.classList.remove('sa','sd');});
+  var map={vara:0,andar:1,emailCartorio:3,telefone:6,whatsapp:7};
+  if(map[col]!==undefined) document.querySelectorAll('thead th')[map[col]].classList.add(sa?'sa':'sd');
+  doSort(); renderTb(); renderCards();
+}
+function doSort(){
+  fil.sort(function(a,b){
+    var av=(a[sc]||'').toString().toLowerCase(),bv=(b[sc]||'').toString().toLowerCase();
+    return sa?av.localeCompare(bv,'pt'):bv.localeCompare(av,'pt');
+  });
+}
+
+// ════════════════════════════════════════════════════
+// MODAL EDIÇÃO
+// ════════════════════════════════════════════════════
+var editId=null, editAbaIdx=null;
+
+function abrirEd(id){
+  var varas=abaVaras();
+  var v=varas.find(function(x){return x.id===id;});
+  if(!v) return;
+  editId=id; editAbaIdx=abaAtiva;
+  document.getElementById('mTit').textContent='Editar: '+v.vara;
+  document.getElementById('fv').value=v.vara;
+  document.getElementById('fcom').value=DADOS_ABAS[abaAtiva].label||'';
+  document.getElementById('ffor').value=DADOS_ABAS[abaAtiva].sublabel||'';
+  document.getElementById('fa').value=v.andar;
+  document.getElementById('fjz').value=v.juizados;
+  document.getElementById('fmag').value=v.magistrado||'';
+  document.getElementById('fe1').value=v.email1jz;
+  document.getElementById('fa1').value=v.assessoria1jz||'';
+  document.getElementById('fe2').value=v.email2jz;
+  document.getElementById('fa2').value=v.assessoria2jz||'';
+  document.getElementById('ftel').value=v.telefone;
+  document.getElementById('fwpp').value=v.whatsapp;
+  document.getElementById('fobs').value=v.obs;
+  document.getElementById('fst').value=v.status;
+  document.getElementById('ffonte').value=v.fonte;
+  document.getElementById('bExc').style.display='inline-flex';
+  document.getElementById('mEd').classList.add('open');
+}
+
+function abrirNova(){
+  editId=null; editAbaIdx=abaAtiva;
+  document.getElementById('mTit').textContent='Nova Vara';
+  ['fv','fa','fjz','fmag','fe1','fa1','fe2','fa2','ftel','fwpp','fobs','ffonte'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('fcom').value=DADOS_ABAS[abaAtiva].label||'';
+  document.getElementById('ffor').value=DADOS_ABAS[abaAtiva].sublabel||'';
+  document.getElementById('fst').value='';
+  document.getElementById('bExc').style.display='none';
+  document.getElementById('mEd').classList.add('open');
+}
+
+function fechar(id){document.getElementById(id).classList.remove('open');}
+
+function salvar(){
+  var va=document.getElementById('fv').value.trim();
+  if(!va){toast('Informe o nome da vara.','err');return;}
+  var obj={
+    vara:va,andar:document.getElementById('fa').value.trim(),
+    juizados:document.getElementById('fjz').value.trim(),
+    magistrado:document.getElementById('fmag').value.trim(),
+    email1jz:document.getElementById('fe1').value.trim(),
+    assessoria1jz:document.getElementById('fa1').value.trim(),
+    email2jz:document.getElementById('fe2').value.trim(),
+    assessoria2jz:document.getElementById('fa2').value.trim(),
+    telefone:document.getElementById('ftel').value.trim(),
+    whatsapp:document.getElementById('fwpp').value.trim(),
+    obs:document.getElementById('fobs').value.trim(),
+    status:document.getElementById('fst').value,
+    fonte:document.getElementById('ffonte').value.trim()
+  };
+  var varas=DADOS_ABAS[editAbaIdx].varas;
+  if(editId){
+    var idx=varas.findIndex(function(x){return x.id===editId;});
+    varas[idx]=Object.assign({},varas[idx],obj);
+    toast('Vara atualizada.','ok');
+  } else {
+    obj.id=Date.now(); varas.push(obj);
+    toast('Vara adicionada.','ok');
+  }
+  salvarLS(); fechar('mEd'); buildTabs(); popAndar(); filtrar();
+}
+
+function excluir(){
+  if(!editId) return;
+  if(!confirm('Excluir esta vara? Ação irreversível.')) return;
+  var varas=DADOS_ABAS[editAbaIdx].varas;
+  DADOS_ABAS[editAbaIdx].varas=varas.filter(function(x){return x.id!==editId;});
+  salvarLS(); fechar('mEd'); buildTabs(); popAndar(); filtrar();
+  toast('Vara excluída.','err');
+}
+
+// ════════════════════════════════════════════════════
+// IMPRESSÃO
+// ════════════════════════════════════════════════════
+function abrirPrint(){document.getElementById('mPr').classList.add('open');updPrint();}
+
+function updPrint(){
+  var modo=document.querySelector('input[name=pm]:checked').value;
+  var area=document.getElementById('prFiltArea');
+  var varas=abaVaras();
+  if(modo==='andar'){
+    var ands=[...new Set(varas.map(function(v){return v.andar;}).filter(Boolean))].sort();
+    area.innerHTML='<div class="fld"><label>Filtrar andar específico (opcional)</label><select id="prAndar"><option value="">Todos os andares</option>'+ands.map(function(a){return '<option value="'+a+'">'+a+'° andar</option>';}).join('')+'</select></div>';
+  } else if(modo==='vara'){
+    var vs=varas.map(function(v){return v.vara;}).sort(function(a,b){return a.localeCompare(b,'pt');});
+    area.innerHTML='<div class="fld"><label>Filtrar vara específica (opcional)</label><select id="prVara"><option value="">Todas as varas</option>'+vs.map(function(v){return '<option value="'+v+'">'+v+'</option>';}).join('')+'</select></div>';
+  } else { area.innerHTML=''; }
+}
+
+function doImprimir(){
+  var modo=document.querySelector('input[name=pm]:checked').value;
+  var incObs=document.getElementById('prObs').value==='sim';
+  var titC=document.getElementById('prTit').value.trim();
+  var a=DADOS_ABAS[abaAtiva];
+  var lista=[].concat(a.varas), tit='', sub='';
+  window._prAndar=false;
+  if(modo==='vara'){
+    var sv=document.getElementById('prVara')?document.getElementById('prVara').value:'';
+    if(sv){lista=lista.filter(function(v){return v.vara===sv;});sub=sv;}
+    lista.sort(function(a,b){return a.vara.localeCompare(b.vara,'pt');});
+    tit=titC||(a.label+' – '+a.sublabel+' (por Vara)');
+  } else if(modo==='andar'){
+    var sa2=document.getElementById('prAndar')?document.getElementById('prAndar').value:'';
+    if(sa2){lista=lista.filter(function(v){return v.andar===sa2;});sub=sa2+'° Andar';}
+    lista.sort(function(a,b){var da=a.andar||'99',db=b.andar||'99';return da.localeCompare(db,'pt')||a.vara.localeCompare(b.vara,'pt');});
+    tit=titC||(a.label+' – '+a.sublabel+' (por Andar)');
+    window._prAndar=true;
+  } else if(modo==='pend'){
+    lista=lista.filter(function(v){return !temC(v);});
+    lista.sort(function(a,b){return a.vara.localeCompare(b.vara,'pt');});
+    tit=titC||(a.label+' – '+a.sublabel+' (Pendentes)');
+    sub='Varas sem contato preenchido';
+  } else {
+    lista.sort(function(a,b){return a.vara.localeCompare(b.vara,'pt');});
+    tit=titC||(a.label+' – '+a.sublabel+' (Completo)');
+  }
+  document.getElementById('ptTitle').textContent=tit;
+  document.getElementById('ptSub').textContent=(sub?'Filtro: '+sub+'  •  ':'')+'Gerado em '+new Date().toLocaleDateString('pt-BR');
+  fil=lista; renderTb();
+  if(!incObs) document.querySelectorAll('thead th:nth-child(9),tbody td:nth-child(9)').forEach(function(el){el.style.display='none';});
+  fechar('mPr');
+  setTimeout(function(){
+    window.print();
+    document.querySelectorAll('thead th:nth-child(9),tbody td:nth-child(9)').forEach(function(el){el.style.display='';});
+    window._prAndar=false; filtrar();
+  },200);
+}
+
+// ════════════════════════════════════════════════════
+// IMPORT / EXPORT / RESTAURAR
+// ════════════════════════════════════════════════════
+function exportar(){
+  var b=new Blob([JSON.stringify(DADOS_ABAS,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='varas_tjrs_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); toast('Dados exportados.','ok');
+}
+
+function importar(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      var imp=JSON.parse(ev.target.result);
+      if(!Array.isArray(imp)) throw new Error();
+      if(!confirm('Importar '+imp.length+' abas? Dados atuais serão substituídos.')) return;
+      DADOS_ABAS=imp; salvarLS(); abaAtiva=0;
+      buildTabs(); popAndar(); filtrar();
+      toast(imp.length+' abas importadas.','ok');
+    }catch(er){toast('Arquivo JSON inválido.','err');}
+    e.target.value='';
+  };
+  r.readAsText(f);
+}
+
+function restaurar(){
+  if(!confirm('Restaurar dados originais? Alterações serão perdidas.')) return;
+  DADOS_ABAS=JSON.parse(JSON.stringify(ABAS));
+  salvarLS(); abaAtiva=0;
+  buildTabs(); popAndar(); filtrar();
+  toast('Dados restaurados.','ok');
+}
+
+// ════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════
+function toast(msg,tipo){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+(tipo||'');
+  setTimeout(function(){t.className='toast';},3000);
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+document.querySelectorAll('.overlay').forEach(function(o){
+  o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('open');});
+});
+
+// ── Sidebar toggle ──
+function toggleSidebar(){
+  var lay=document.getElementById('layout');
+  lay.classList.toggle('sb-collapsed');
+}
+
+// ── Tab-bar: scroll com roda do mouse + drag ──
+(function(){
+  var tb=document.getElementById('tabBar');
+  tb.addEventListener('wheel',function(e){e.preventDefault();tb.scrollLeft+=e.deltaY+e.deltaX;},{passive:false});
+  var drag=false,sx=0,sl=0;
+  tb.addEventListener('mousedown',function(e){drag=true;sx=e.pageX;sl=tb.scrollLeft;tb.classList.add('grabbing');});
+  document.addEventListener('mouseup',function(){drag=false;tb.classList.remove('grabbing');});
+  document.addEventListener('mousemove',function(e){if(!drag)return;e.preventDefault();tb.scrollLeft=sl-(e.pageX-sx);});
+  var tx=0,tl=0;
+  tb.addEventListener('touchstart',function(e){tx=e.touches[0].pageX;tl=tb.scrollLeft;},{passive:true});
+  tb.addEventListener('touchmove',function(e){tb.scrollLeft=tl-(e.touches[0].pageX-tx);},{passive:true});
+})();
+
+// ── Tabela: scroll horizontal com roda do mouse + drag ──
+(function(){
+  var tw=document.getElementById('tblWrap');
+  if(!tw) return;
+  // wheel: shift+roda OU roda vertical quando não há scroll vertical
+  tw.addEventListener('wheel',function(e){
+    // se tiver delta horizontal nativo (trackpad), usa direto
+    if(Math.abs(e.deltaX)>Math.abs(e.deltaY)){
+      e.preventDefault();tw.scrollLeft+=e.deltaX;
+    } else {
+      e.preventDefault();tw.scrollLeft+=e.deltaY;
+    }
+  },{passive:false});
+  // drag
+  var drag=false,sx=0,sl=0;
+  tw.addEventListener('mousedown',function(e){
+    // não inicia drag em selects, botões ou inputs
+    if(e.target.tagName==='SELECT'||e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+    drag=true;sx=e.pageX;sl=tw.scrollLeft;tw.classList.add('grabbing');
+  });
+  document.addEventListener('mouseup',function(){drag=false;tw.classList.remove('grabbing');});
+  document.addEventListener('mousemove',function(e){if(!drag)return;e.preventDefault();tw.scrollLeft=sl-(e.pageX-sx);});
+  // touch
+  var tx=0,tl=0;
+  tw.addEventListener('touchstart',function(e){tx=e.touches[0].pageX;tl=tw.scrollLeft;},{passive:true});
+  tw.addEventListener('touchmove',function(e){tw.scrollLeft=tl-(e.touches[0].pageX-tx);},{passive:true});
+})();
+
+buildTabs();
+popAndar();
+filtrar();
+</script>
+</body>
+</html>
